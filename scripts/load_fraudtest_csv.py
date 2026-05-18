@@ -1,6 +1,6 @@
 """
 scripts/load_fraudtest_csv.py
-Carga el CSV preprocesado de fraude a Supabase/PostgreSQL.
+Carga el CSV preprocesado de fraude a Supabase
 """
 
 import logging
