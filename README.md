@@ -32,25 +32,18 @@ mvp-dataops-CreditCardFraud/
 ├─ app/
 │  ├─ __init__.py
 │  ├─ main.py
-│  ├─ db.py
-│  └─ predict.py
+│  ├─ db.py│ 
 ├─ scripts/
-│  ├─ load_02fraudFraud.py
-│  └─ train_matriculado_model.py
-├─ artifacts/
-│  ├─ matriculado_model.joblib
-│  └─ matriculado_metrics.json
-├─ examples/
-│  └─ predict_matriculado_payload.json
+│  ├─ load_fraudtest_csv.py
+│  └─ limpieza_fraud_pipeline.py
+│  └─ validate_frautest.py
 ├─ tests/
 │  └─ test_health.py
-├─ data/
-│  └─ 02fraudTest.csv
-├─ sql/
-│  └─ 01_create_postulaciones_demo_table.sql
 ├─ .github/
 │  └─ workflows/
 │     └─ ci.yml
+├─ data/
+  └─ 02_fraudTest
 ├─ .env.example
 ├─ .gitignore
 ├─ .dockerignore
@@ -61,7 +54,7 @@ mvp-dataops-CreditCardFraud/
 ```
 
 ## Flujo implementado
-1. Se dispone de un archivo Excel de ejemplo en `data/postulaciones.xlsx`
+1. Se dispone de un archivo CSV de ejemplo en `data/postulaciones.xlsx`
 2. Se crea una tabla destino en Supabase: `public.postulaciones_demo`
 3. Un script Python carga los datos del Excel a Supabase
 4. La API consulta esos datos y los expone en JSON
