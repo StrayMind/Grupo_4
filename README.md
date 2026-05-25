@@ -43,7 +43,7 @@ mvp-dataops-CreditCardFraud/
 │  └─ workflows/
 │     └─ ci.yml
 ├─ data/
-  └─ 02_fraudTest
+  └─ 02_fraudTest.csv
 ├─ .env.example
 ├─ .gitignore
 ├─ .dockerignore
