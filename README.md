@@ -54,8 +54,8 @@ mvp-dataops-CreditCardFraud/
 ```
 
 ## Flujo implementado
-1. Se dispone de un archivo CSV de ejemplo en `data/postulaciones.xlsx`
-2. Se crea una tabla destino en Supabase: `public.postulaciones_demo`
+1. Se dispone de un archivo CSV de ejemplo en `data/01_fraudtest.csv`
+2. Se crea una tabla destino en Supabase: `public.fraudtest_demo`
 3. Un script Python carga los datos del Excel a Supabase
 4. La API consulta esos datos y los expone en JSON
 5. Se generan estadísticas básicas del dataset
