@@ -1,4 +1,8 @@
-from dotenv import load_dotenv
+"""
+scripts/train_fraud_model.py
+Entrenamiento del modelo de detección de fraude usando datos de Supabase.
+"""
+
 import os
 import json
 from pathlib import Path
@@ -6,19 +10,21 @@ from pathlib import Path
 import joblib
 import pandas as pd
 import psycopg
+from dotenv import load_dotenv
 from sklearn.compose import ColumnTransformer
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OrdinalEncoder
 
 load_dotenv()
 
 ARTIFACTS_DIR = Path("artifacts")
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
-TARGET_COL = "matriculado"
+# CORRECCIÓN: El target real en la base de datos es is_fraud
+TARGET_COL = "is_fraud"
 
 def get_connection_params():
     return {
@@ -31,9 +37,9 @@ def get_connection_params():
     }
 
 def load_dataset():
+    # Seleccionamos las columnas validadas que subimos en el paso de carga
     query = '''
-    select
-        trans_date_trans_time, 
+    SELECT
         cc_num, 
         merchant, 
         category, 
@@ -50,44 +56,49 @@ def load_dataset():
         unix_time, 	
         merch_lat, 	
         merch_long, 	
-        is_fraud,
-    from public.fraudTest_demo
-    where is_fraud is not null;
+        is_fraud
+    FROM public.fraudtest_demo
+    WHERE is_fraud IS NOT NULL;
     '''
 
-    #with psycopg.connect(**get_connection_params()) as conn:
-        #df = pd.read_sql(query, conn)
+    print("Conectando a la base de datos para extraer datos...")
+    with psycopg.connect(**get_connection_params()) as conn:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            # Obtenemos los nombres de las columnas y los datos directamente
+            columns = [desc[0] for desc in cur.description]
+            data = cur.fetchall()
+            df = pd.DataFrame(data, columns=columns)
 
-    #df.columns = [c.strip().lower() for c in df.columns]
-    #df["gratuidad"] = df["gratuidad"].astype(str).str.strip()
-    #df["pace"] = df["pace"].astype(str).str.strip()
-    #df["matriculado"] = df["matriculado"].astype(str).str.strip().str.upper()
-
-    #df = df[df["matriculado"].isin(["SI", "NO"])].copy()
-    #df[TARGET_COL] = df[TARGET_COL].map({"SI": 1, "NO": 0})
-
-    #return df
+    # Aseguramos que la variable objetivo sea numérica
+    df[TARGET_COL] = df[TARGET_COL].astype(int)
+    
+    return df
 
 def build_pipeline(X: pd.DataFrame):
-    categorical_features = X.select_dtypes(include=["object"]).columns.tolist()
+    # Detección automática de columnas categóricas y numéricas
+    categorical_features = X.select_dtypes(include=["object", "string"]).columns.tolist()
     numeric_features = [c for c in X.columns if c not in categorical_features]
 
-    #preprocessor = ColumnTransformer(
-    #    transformers=[
-    #        ("cat", LabelEncoder(handle_unknown="ignore"), categorical_features),
-    #        ("num", "passthrough", numeric_features),
-    #    ]
-    #)
-
-    model = DecisionTreeClassifier(
-        max_iter=1000,
-        class_weight="balanced",
-        solver="lbfgs"
+    # CORRECCIÓN: OrdinalEncoder es la herramienta correcta en un ColumnTransformer para múltiples columnas
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("cat", OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1), categorical_features),
+            ("num", "passthrough", numeric_features),
+        ]
     )
 
+    # CORRECCIÓN: Un árbol de decisión usa max_depth, no max_iter ni solver
+    model = DecisionTreeClassifier(
+        max_depth=12, # Limita el crecimiento para evitar overfitting
+        class_weight="balanced",
+        random_state=42
+    )
+
+    # El pipeline ahora integra correctamente el preprocesador y el modelo
     pipeline = Pipeline(
         steps=[
-            #("preprocessor", preprocessor),
+            ("preprocessor", preprocessor),
             ("model", model),
         ]
     )
@@ -95,7 +106,9 @@ def build_pipeline(X: pd.DataFrame):
     return pipeline, categorical_features, numeric_features
 
 def main():
+    print("Iniciando extracción de datos desde Supabase...")
     df = load_dataset()
+    print(f"Dataset cargado correctamente. Dimensiones: {df.shape}")
 
     X = df.drop(columns=[TARGET_COL])
     y = df[TARGET_COL]
@@ -110,7 +123,10 @@ def main():
         stratify=y
     )
 
+    print("Entrenando el modelo Pipeline...")
     pipeline.fit(X_train, y_train)
+    
+    print("Evaluando el modelo...")
     y_pred = pipeline.predict(X_test)
 
     accuracy = accuracy_score(y_test, y_pred)
@@ -127,12 +143,13 @@ def main():
         "numeric_features": numeric_features,
     }
 
+    print("Guardando artefactos en disco...")
     joblib.dump(pipeline, ARTIFACTS_DIR / "fraude_model.joblib")
 
     with open(ARTIFACTS_DIR / "fraude_metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=2, ensure_ascii=False)
 
-    print("Entrenamiento completado")
+    print("\n=== Entrenamiento completado exitosamente ===")
     print(f"Accuracy: {accuracy:.4f}")
     print(f"Modelo guardado en: {ARTIFACTS_DIR / 'fraude_model.joblib'}")
     print(f"Métricas guardadas en: {ARTIFACTS_DIR / 'fraude_metrics.json'}")
