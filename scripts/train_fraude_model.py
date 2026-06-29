@@ -23,7 +23,7 @@ load_dotenv()
 ARTIFACTS_DIR = Path("artifacts")
 ARTIFACTS_DIR.mkdir(exist_ok=True)
 
-# CORRECCIÓN: El target real en la base de datos es is_fraud
+
 TARGET_COL = "is_fraud"
 
 def get_connection_params():
@@ -37,7 +37,7 @@ def get_connection_params():
     }
 
 def load_dataset():
-    # Seleccionamos las columnas validadas que subimos en el paso de carga
+
     query = '''
     SELECT
         cc_num, 
