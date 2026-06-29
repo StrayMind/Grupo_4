@@ -7,11 +7,8 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
-# Ruta donde el script de entrenamiento guardó el modelo
 MODEL_PATH = Path("artifacts/fraude_model.joblib")
 
-# Columnas exactas (y en el mismo orden) que el modelo espera recibir,
-# excluyendo cc_num, dob, gender y unix_time que fueron descartadas en el entrenamiento.
 FEATURE_COLUMNS = [
     "merchant",
     "category",
@@ -38,10 +35,8 @@ def predict_fraude(payload: dict):
     """
     model = load_model()
 
-    # Convertir el diccionario en un DataFrame asegurando el orden correcto de las columnas
     data = pd.DataFrame([payload], columns=FEATURE_COLUMNS)
 
-    # Realizar predicción y obtener probabilidades
     pred = model.predict(data)[0]
     probs = model.predict_proba(data)[0]
 
