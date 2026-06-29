@@ -60,8 +60,18 @@ mvp-dataops-CreditCardFraud/
 ```
 
 ## Flujo implementado
-1. Se dispone de un archivo CSV de ejemplo en `data/01_fraudtest.csv`
-2. Se crea una tabla destino en Supabase: `public.fraudtest_demo`
-3. Un script Python carga los datos del CSV a Supabase
-4. La API consulta esos datos y los expone en JSON
-5. Se generan estadísticas básicas del dataset
+1. Se dispone de un archivo CSV de ejemplo en data/02_fraudTest.csv
+2. Se validan y limpian los datos mediante scripts
+3. Se crea una tabla destino en Supabase: `public.fraudtest_demo`
+4. Un script Python carga los datos del CSV a Supabase
+5. Se entrena un modelo de clasificación binaria para detectar `FRAUDE`
+6. Se guardan los artefactos del modelo en artifacts/
+7. La API consulta esos datos y los expone en JSON
+8. El proyecto se despliega usando Render y Power Bi
+
+## Dataset y variable objetivo
+Se utliza el dataset de `fraudeTest` y la variable objetivo es:
+
+`is_fraud`  valores `SI` / `NO`
+
+Para el MVP se implemento el clasificador binario con el Arbol de decision,
