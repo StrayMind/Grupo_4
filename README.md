@@ -72,6 +72,108 @@ mvp-dataops-CreditCardFraud/
 ## Dataset y variable objetivo
 Se utliza el dataset de `fraudeTest` y la variable objetivo es:
 
-`is_fraud`  valores `SI` / `NO`
+-  `is_fraud` → valores `NORMAL` / `FRAUDE`
 
-Para el MVP se implemento el clasificador binario con el Arbol de decision,
+Para el MVP se implemento el clasificador binario con el **Arbol de decision**.
+
+## Endpoints actuales
+- `GET /` : verifica que la API esté activa
+- `GET /health` : verifica salud general
+- `GET /db-health` : verifica conexión a Supabase
+- `GET /fraudetest-demo?limit=20` : devuelve registros desde la tabla `fraudtest_demo`
+- `GET /fraudetest-demo/stats` : devuelve estadísticas básicas del dataset
+- `POST /predict-fraude` : devuelve la predicción de fraude usando el modelo entrenado
+
+## Ejecución local
+1. Clonar el repositorio
+2. Crear archivo `.env` a partir de `.env.example`
+3. Activar entorno virtual
+4. Instalar dependencias
+5. Ejecutar:
+
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+## Pruebas locales de API
+Probar en navegador o herramienta similar:
+
+```text
+http://127.0.0.1:8000/
+http://127.0.0.1:8000/health
+http://127.0.0.1:8000/db-health
+http://127.0.0.1:8000/fraudetest-demo?limit=5
+http://127.0.0.1:8000/fraudetest-demo/stats
+http://127.0.0.1:8000/docs
+```
+
+## Carga de datos desde Excel
+El script de carga es:
+
+```bash
+python scripts/load_fraudtest_csv.py
+```
+
+### Qué hace
+- lee `data/02_fraudTest.csv`
+- valida columnas esperadas
+- limpia la tabla `public.fraudtest_demo`
+- inserta nuevamente los registros
+
+## SQL base de la tabla
+La tabla se crea con el archivo:
+
+```text
+sql/01_create_fraudtest_demo_table.sql
+```
+
+Ese archivo debe ejecutarse en **Supabase > SQL Editor** antes de correr la carga del CSV.
+
+## Estadísticas del dataset
+El endpoint:
+
+```text
+GET /fraudtest-demo/stats
+```
+
+devuelve:
+
+
+## Entrenamiento del modelo
+El script de entrenamiento es:
+
+```bash
+python scripts/train_fraude_model.py
+```
+
+### Qué hace
+- lee los datos desde `public.postulaciones_demo`
+- prepara variables categóricas y numéricas
+- usa `ColumnTransformer` + `OrdinalEncoder`
+- divide train/test con `stratify=y`
+- entrena una `DecisionTreeClassifier`
+- guarda el modelo y las métricas
+
+### Artefactos generados
+```text
+artifacts/fraude_model.joblib
+artifacts/fraude_metrics.json
+```
+
+## Resultado base del modelo
+En la versión actual del MVP se obtuvo aproximadamente:
+
+- `accuracy`: 0.
+
+La interpretación general es:
+- buen desempeño para identificar la clase `Normal`
+- desempeño demasiado bajo identificar `Fraude`
+
+## Predicción
+El endpoint:
+
+```text
+POST /predict-matriculado
+```
+
+espera un JSON con estas variables:
