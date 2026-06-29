@@ -70,17 +70,15 @@ def load_dataset():
             data = cur.fetchall()
             df = pd.DataFrame(data, columns=columns)
 
-    # Aseguramos que la variable objetivo sea numérica
+
     df[TARGET_COL] = df[TARGET_COL].astype(int)
     
     return df
 
 def build_pipeline(X: pd.DataFrame):
-    # Detección automática de columnas categóricas y numéricas
     categorical_features = X.select_dtypes(include=["object", "string"]).columns.tolist()
     numeric_features = [c for c in X.columns if c not in categorical_features]
 
-    # CORRECCIÓN: OrdinalEncoder es la herramienta correcta en un ColumnTransformer para múltiples columnas
     preprocessor = ColumnTransformer(
         transformers=[
             ("cat", OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1), categorical_features),
@@ -88,14 +86,12 @@ def build_pipeline(X: pd.DataFrame):
         ]
     )
 
-    # CORRECCIÓN: Un árbol de decisión usa max_depth, no max_iter ni solver
     model = DecisionTreeClassifier(
-        max_depth=12, # Limita el crecimiento para evitar overfitting
+        max_depth=12, 
         class_weight="balanced",
         random_state=42
     )
 
-    # El pipeline ahora integra correctamente el preprocesador y el modelo
     pipeline = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
