@@ -16,7 +16,7 @@ def db_health():
     return test_connection()
 
 @app.get("/fraudtest-demo")
-def fraudtest_demo(limit: int = Query(default=20, ge=1, le=100)):
+def fraudtest_demo(limit: int = Query(default=20, ge=1, le=999999)):
     try:
         data = get_fraudtest(limit=limit)
         return {"status": "ok", "count": len(data), "limit": limit, "data": data}
