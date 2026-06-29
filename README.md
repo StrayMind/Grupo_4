@@ -3,10 +3,10 @@ Gestión de datos para IA
 
 # MVP DataOps CreditCardaFraud
 
-Repositorio piloto para preparar, probar y documentar un entorno técnico reproducible para soluciones de datos e IA.
+Repositorio para preparar, probar y documentar un entorno técnico reproducible para soluciones de datos e IA.
 
 ## Objetivo
-Contar con una base técnica simple y replicable para que los grupos de estudiantes puedan trabajar con:
+Entorno tecnico reproducible para entrenar un modelo IA que detecte fraudes de tarjetas de credito trabajando con:
 - Python 3
 - FastAPI
 - Docker
@@ -24,29 +24,35 @@ La solución implementa una arquitectura IA híbrida simple:
 - CI/CD con GitHub Actions
 - Despliegue en Render
 - Base de datos PostgreSQL en Supabase
-- Modelo de clasificación binaria con Regresión Logística
+- Modelo de clasificación binaria con Arbol de decision
 
 ## Estructura del proyecto
 ```text
 mvp-dataops-CreditCardFraud/
-├─ app/
-│  ├─ __init__.py
-│  ├─ main.py
-│  ├─ db.py│ 
-├─ scripts/
-│  ├─ load_fraudtest_csv.py
-│  └─ limpieza_fraud_pipeline.py
-│  └─ validate_frautest.py
-├─ tests/
-│  └─ test_health.py
 ├─ .github/
 │  └─ workflows/
 │     └─ ci.yml
+├─ app/
+│  ├─ __init__.py
+│  ├─ db.py
+│  ├─ main.py
+│  └─ predict.py
+├─ artifacts/
+│  ├─ fraude_metrics.json
+│  └─ fraude_model.joblib
 ├─ data/
-  └─ 02_fraudTest.csv
+  └─ 02_fraudTest.csv (url del drive en donde esta el csv)
+├─ scripts/
+│  ├─ correr_pipeline.py
+│  ├─ limpieza_fraud_pipeline.py
+│  ├─ load_fraudtest_csv.py
+│  ├─ train_fraud_model.py
+│  └─ validate_frautest.py
+├─ tests/
+│  └─ test_health.py
+├─ .dockerignore
 ├─ .env.example
 ├─ .gitignore
-├─ .dockerignore
 ├─ Dockerfile
 ├─ README.md
 ├─ render.yaml
