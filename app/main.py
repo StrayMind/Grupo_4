@@ -1,13 +1,10 @@
 from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
-
-# Asegúrate de que las rutas de importación coincidan con la estructura de tus carpetas
 from app.db import test_connection, get_fraudtest, get_fraudtest_stats
 from app.predict import predict_fraude
 
 app = FastAPI(title="MVP Fraud Test")
 
-# Modelo de validación de datos para la API
 class PredictFraudeRequest(BaseModel):
     merchant: str
     category: str
@@ -61,7 +58,6 @@ def fraudtest_demo_stats():
 @app.post("/predict-fraude")
 def predict_fraude_endpoint(payload: PredictFraudeRequest):
     try:
-        # payload.model_dump() convierte los datos validados a un diccionario
         result = predict_fraude(payload.model_dump())
         return {
             "status": "ok",
