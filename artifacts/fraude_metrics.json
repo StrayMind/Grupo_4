@@ -1,0 +1,61 @@
+{
+  "accuracy": 0.9704977326711294,
+  "confusion_matrix": [
+    [
+      107470,
+      3245
+    ],
+    [
+      34,
+      395
+    ]
+  ],
+  "classification_report": {
+    "0": {
+      "precision": 0.9996837326983182,
+      "recall": 0.9706905116741182,
+      "f1-score": 0.984973810713091,
+      "support": 110715.0
+    },
+    "1": {
+      "precision": 0.10851648351648352,
+      "recall": 0.9207459207459208,
+      "f1-score": 0.1941508970262964,
+      "support": 429.0
+    },
+    "accuracy": 0.9704977326711294,
+    "macro avg": {
+      "precision": 0.5541001081074008,
+      "recall": 0.9457182162100195,
+      "f1-score": 0.5895623538696937,
+      "support": 111144.0
+    },
+    "weighted avg": {
+      "precision": 0.9962439541236852,
+      "recall": 0.9704977326711294,
+      "f1-score": 0.9819213469726136,
+      "support": 111144.0
+    }
+  },
+  "train_rows": 444575,
+  "test_rows": 111144,
+  "categorical_features": [],
+  "numeric_features": [
+    "cc_num",
+    "merchant",
+    "category",
+    "amt",
+    "gender",
+    "street",
+    "city",
+    "state",
+    "zip",
+    "lat",
+    "long",
+    "job",
+    "dob",
+    "unix_time",
+    "merch_lat",
+    "merch_long"
+  ]
+}
