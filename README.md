@@ -163,7 +163,7 @@ artifacts/fraude_metrics.json
 ## Resultado base del modelo
 En la versión actual del MVP se obtuvo aproximadamente:
 
-- `accuracy`: 0.
+- `accuracy`: 0.98
 
 La interpretación general es:
 - buen desempeño para identificar la clase `Normal`
