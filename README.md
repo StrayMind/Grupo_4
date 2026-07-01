@@ -177,3 +177,19 @@ POST /predict-matriculado
 ```
 
 espera un JSON con estas variables:
+```text
+payload = {
+        "merchant": "58",
+        "category": "12",
+        "amt": 286.50,
+        "street": "67",
+        "city": "8",
+        "state": "9",
+        "zip": 62701,
+        "lat": 39.7817,
+        "long": -89.6501,
+        "job" : "24",
+        "merch_lat": 39.8000,
+        "merch_long": -89.6000
+    }
+```
